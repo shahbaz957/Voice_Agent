@@ -1,6 +1,6 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import multer from "multer";
-import { transcribeAudio } from "../services/asr.service.js";
+import { handleTurn } from "../agent/agent.service.js";
 
 const router = Router();
 const upload = multer({
@@ -22,8 +22,8 @@ router.post(
         return;
       }
 
-      const text = await transcribeAudio(req.file.buffer);
-      res.json({ text });
+      const { transcript, replyText } = await handleTurn(req.file.buffer);
+      res.json({ text: transcript, replyText });
     } catch (err) {
       next(err);
     }

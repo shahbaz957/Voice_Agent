@@ -1,13 +1,17 @@
 /**
  * Voice agent orchestrator.
- * Phase 6 wires: ASR → LLM → TTS
+ * Current: ASR → LLM (TTS later)
  */
+import { transcribeAudio } from "../services/asr.service.js";
+import { generateReply } from "../services/llm.service.js";
+
 export type AgentTurnResult = {
   transcript: string;
   replyText: string;
-  audio: Buffer;
 };
 
-export async function handleTurn(_audio: Buffer): Promise<AgentTurnResult> {
-  throw new Error("Agent pipeline not implemented — Phase 6");
+export async function handleTurn(audio: Buffer): Promise<AgentTurnResult> {
+  const transcript = await transcribeAudio(audio);
+  const replyText = await generateReply(transcript);
+  return { transcript, replyText };
 }

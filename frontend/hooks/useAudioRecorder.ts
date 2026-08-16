@@ -23,6 +23,7 @@ export function useAudioRecorder() {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastTranscript, setLastTranscript] = useState<string | null>(null);
+  const [lastReply, setLastReply] = useState<string | null>(null);
 
   const cleanupStream = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -33,6 +34,7 @@ export function useAudioRecorder() {
   const startRecording = useCallback(async () => {
     setError(null);
     setLastTranscript(null);
+    setLastReply(null);
 
     if (mediaRecorderRef.current?.state === "recording") return;
 
@@ -100,6 +102,7 @@ export function useAudioRecorder() {
 
       const result = await voiceApi.transcribe(formData);
       setLastTranscript(result.text);
+      setLastReply(result.replyText);
       return result;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Transcribe request failed";
@@ -115,6 +118,7 @@ export function useAudioRecorder() {
     isUploading,
     error,
     lastTranscript,
+    lastReply,
     startRecording,
     stopRecording,
   };

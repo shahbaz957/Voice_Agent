@@ -14,7 +14,10 @@ export type VoicePingResponse = {
 };
 
 export type TranscribeResponse = {
+  /** ASR transcript */
   text: string;
+  /** LLM reply (no TTS yet) */
+  replyText: string;
 };
 
 export type ApiErrorBody = {

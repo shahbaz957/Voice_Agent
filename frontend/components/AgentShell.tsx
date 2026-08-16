@@ -12,6 +12,7 @@ import { VoiceButton } from "@/components/VoiceButton";
 
 export function AgentShell() {
   const [entries, setEntries] = useState<TranscriptEntry[]>([]);
+  const [replyText, setReplyText] = useState<string | null>(null);
   const {
     isRecording,
     isUploading,
@@ -29,7 +30,7 @@ export function AgentShell() {
         : "STANDBY";
 
   const hint = useMemo(() => {
-    if (isUploading) return "Sending to ASR…";
+    if (isUploading) return "ASR → LLM…";
     if (isRecording) return "Stop recording";
     if (error) return "Retry recording";
     return "Start recording";
@@ -50,6 +51,9 @@ export function AgentShell() {
             createdAt: new Date().toISOString(),
           },
         ]);
+      }
+      if (result?.replyText) {
+        setReplyText(result.replyText);
       }
       return;
     }
@@ -98,8 +102,7 @@ export function AgentShell() {
             <p className="max-w-lg text-center text-sm text-danger">{error}</p>
           ) : (
             <p className="max-w-lg text-center text-sm leading-relaxed text-fg-muted">
-              Start recording, speak, then stop — audio is sent to{" "}
-              <span className="font-mono text-accent">/api/voice/transcribe</span>.
+              Record → ASR transcript → LLM reply (TTS comes later).
             </p>
           )}
         </main>
@@ -109,7 +112,7 @@ export function AgentShell() {
             <BackendStatus />
           </div>
           <Transcript entries={entries} />
-          <AudioPlayer />
+          <AudioPlayer replyText={replyText} />
         </footer>
       </div>
     </div>
