@@ -350,7 +350,8 @@ This project aims for both — a console that feels composed, and a pipeline tha
 
 ## License
 
-Private / personal engineering project unless otherwise stated by the author.
+Currently held private and has no mood for license yet :) 
+Just Built by Shahbaz Baig (Ai Engineer + Building scalable apps that can also survive in production not just vibe coded disasters)
 
 ---
 
