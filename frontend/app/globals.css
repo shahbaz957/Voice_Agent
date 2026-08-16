@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+:root {
+  /* AEGIS — steel / cyan HUD (Jarvis-adjacent, not purple SaaS) */
+  --bg-deep: #070b12;
+  --bg-panel: #0c121c;
+  --bg-elevated: #121a27;
+  --fg: #e8eef7;
+  --fg-muted: #8b9bb0;
+  --accent: #3dd6c6;
+  --accent-dim: #1f8f85;
+  --accent-soft: rgba(61, 214, 198, 0.14);
+  --warn: #e6b35a;
+  --danger: #e57373;
+  --ok: #5dce8a;
+  --line: rgba(232, 238, 247, 0.1);
+  --line-strong: rgba(61, 214, 198, 0.35);
+  --radar: rgba(61, 214, 198, 0.06);
+  --shadow-hud: 0 0 0 1px var(--line), 0 24px 60px rgba(0, 0, 0, 0.45);
+
+  --font-display: var(--font-exo);
+  --font-body: var(--font-sora);
+  --font-mono: var(--font-jetbrains);
+}
+
+@theme inline {
+  --color-bg-deep: var(--bg-deep);
+  --color-bg-panel: var(--bg-panel);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-accent-soft: var(--accent-soft);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-ok: var(--ok);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-deep);
+  color: var(--fg);
+  font-family: var(--font-body), sans-serif;
+}
+
+/* Atmospheric field — reusable background layer */
+.aegis-field {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, rgba(61, 214, 198, 0.12), transparent 55%),
+    radial-gradient(900px 500px at 85% 90%, rgba(45, 90, 140, 0.18), transparent 50%),
+    linear-gradient(180deg, #0a101a 0%, var(--bg-deep) 55%, #05080e 100%);
+}
+
+.aegis-field::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.35;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+}
+
+.aegis-field::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(61, 214, 198, 0.03) 50%,
+    transparent 60%
+  );
+  animation: scan-sweep 8s ease-in-out infinite;
+}
+
+.aegis-content {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes scan-sweep {
+  0%,
+  100% {
+    transform: translateX(-8%);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateX(8%);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.12);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.12);
+    opacity: 0;
+  }
+}
+
+@keyframes status-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.anim-fade-up {
+  animation: fade-up 0.7s ease-out both;
+}
+
+.anim-fade-up-delay {
+  animation: fade-up 0.7s ease-out 0.12s both;
+}
+
+.anim-fade-up-delay-2 {
+  animation: fade-up 0.7s ease-out 0.24s both;
+}
+
+.anim-breathe {
+  animation: status-breathe 2.4s ease-in-out infinite;
+}
+
+.anim-pulse-ring {
+  animation: pulse-ring 2.2s ease-out infinite;
+}

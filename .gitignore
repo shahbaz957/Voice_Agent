@@ -1,0 +1,100 @@
+# =============================================================================
+# Voice_Agents — root .gitignore
+# =============================================================================
+
+# ----- Secrets & environment -------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.local.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+secrets/
+**/secrets/
+
+# ----- Dependencies ----------------------------------------------------------
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ----- Python / ASR / TTS local runtimes -------------------------------------
+.venv/
+venv/
+env/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg
+pip-wheel-metadata/
+
+# Local speech temp files
+asr-service/temp_input.*
+*.webm
+*.wav
+*.mp3
+*.ogg
+!frontend/public/**/*.mp3
+
+# Hugging Face / model caches (never commit weights)
+.cache/
+**/huggingface/
+*.bin
+*.ct2
+*.pt
+*.onnx
+
+# ----- Next.js / frontend ----------------------------------------------------
+frontend/.next/
+frontend/out/
+frontend/.vercel/
+frontend/next-env.d.ts
+
+# ----- Backend / Node build --------------------------------------------------
+backend/dist/
+**/dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# ----- Logs & debug ----------------------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ----- OS / IDE --------------------------------------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+*.swp
+*.swo
+
+# ----- Cursor / local agent clutter ------------------------------------------
+.cursor/
+.claude/
+
+# ----- Misc ------------------------------------------------------------------
+*.local
+tmp/
+temp/
+.turbo/
