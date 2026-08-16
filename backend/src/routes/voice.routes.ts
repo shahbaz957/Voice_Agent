@@ -22,8 +22,12 @@ router.post(
         return;
       }
 
-      const { transcript, replyText } = await handleTurn(req.file.buffer);
-      res.json({ text: transcript, replyText });
+      const { transcript, replyText, audio } = await handleTurn(req.file.buffer);
+      res.json({
+        text: transcript,
+        replyText,
+        audioBase64: audio.toString("base64"),
+      });
     } catch (err) {
       next(err);
     }

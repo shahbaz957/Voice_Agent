@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 type AudioPlayerProps = {
   src?: string | null;
-  /** LLM text reply until TTS is wired */
   replyText?: string | null;
   label?: string;
 };
@@ -21,13 +20,51 @@ export function AudioPlayer({
   const hasReply = Boolean(replyText?.trim());
 
   useEffect(() => {
+    const el = audioRef.current;
+    if (!el || !src) {
+      setIsPlaying(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const playWhenReady = async () => {
+      try {
+        el.pause();
+        el.currentTime = 0;
+        await el.play();
+        if (!cancelled) setIsPlaying(true);
+      } catch {
+        if (!cancelled) setIsPlaying(false);
+      }
+    };
+
+    const onCanPlay = () => {
+      void playWhenReady();
+    };
+
     setIsPlaying(false);
+    el.src = src;
+    el.load();
+    el.addEventListener("canplaythrough", onCanPlay, { once: true });
+
+    // If already buffered enough, play immediately
+    if (el.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+      void playWhenReady();
+    }
+
+    return () => {
+      cancelled = true;
+      el.removeEventListener("canplaythrough", onCanPlay);
+      el.pause();
+    };
   }, [src]);
 
   const status = useMemo(() => {
+    if (!emptyAudio && isPlaying) return "Playing response";
+    if (!emptyAudio) return "Ready to play";
     if (hasReply) return "LLM response ready";
-    if (emptyAudio) return "No output yet";
-    return isPlaying ? "Playing response" : "Ready to play";
+    return "No output yet";
   }, [emptyAudio, hasReply, isPlaying]);
 
   async function toggle() {
@@ -81,14 +118,12 @@ export function AudioPlayer({
         )}
       </div>
 
-      {src ? (
-        <audio
-          ref={audioRef}
-          src={src}
-          onEnded={() => setIsPlaying(false)}
-          className="hidden"
-        />
-      ) : null}
+      <audio
+        ref={audioRef}
+        preload="auto"
+        onEnded={() => setIsPlaying(false)}
+        className="hidden"
+      />
     </section>
   );
 }

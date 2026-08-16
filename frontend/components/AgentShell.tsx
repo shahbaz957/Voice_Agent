@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { appConfig } from "@/lib/config";
+import { base64ToObjectUrl } from "@/lib/audio";
 import type { AgentStatus, TranscriptEntry } from "@/lib/types/voice";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 import { AudioPlayer } from "@/components/AudioPlayer";
@@ -13,6 +14,7 @@ import { VoiceButton } from "@/components/VoiceButton";
 export function AgentShell() {
   const [entries, setEntries] = useState<TranscriptEntry[]>([]);
   const [replyText, setReplyText] = useState<string | null>(null);
+  const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const {
     isRecording,
     isUploading,
@@ -20,6 +22,12 @@ export function AgentShell() {
     startRecording,
     stopRecording,
   } = useAudioRecorder();
+
+  useEffect(() => {
+    return () => {
+      if (audioSrc?.startsWith("blob:")) URL.revokeObjectURL(audioSrc);
+    };
+  }, [audioSrc]);
 
   const status: AgentStatus = isUploading
     ? "THINKING"
@@ -30,7 +38,7 @@ export function AgentShell() {
         : "STANDBY";
 
   const hint = useMemo(() => {
-    if (isUploading) return "ASR → LLM…";
+    if (isUploading) return "ASR → LLM → TTS…";
     if (isRecording) return "Stop recording";
     if (error) return "Retry recording";
     return "Start recording";
@@ -54,6 +62,12 @@ export function AgentShell() {
       }
       if (result?.replyText) {
         setReplyText(result.replyText);
+      }
+      if (result?.audioBase64) {
+        setAudioSrc((prev) => {
+          if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
+          return base64ToObjectUrl(result.audioBase64);
+        });
       }
       return;
     }
@@ -102,7 +116,7 @@ export function AgentShell() {
             <p className="max-w-lg text-center text-sm text-danger">{error}</p>
           ) : (
             <p className="max-w-lg text-center text-sm leading-relaxed text-fg-muted">
-              Record → ASR transcript → LLM reply (TTS comes later).
+              Record → ASR → LLM → Piper TTS → speaker.
             </p>
           )}
         </main>
@@ -112,7 +126,7 @@ export function AgentShell() {
             <BackendStatus />
           </div>
           <Transcript entries={entries} />
-          <AudioPlayer replyText={replyText} />
+          <AudioPlayer replyText={replyText} src={audioSrc} />
         </footer>
       </div>
     </div>

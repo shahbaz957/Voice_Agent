@@ -18,6 +18,7 @@ export function useAudioRecorder() {
   const chunksRef = useRef<Blob[]>([]);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   const [isRecording, setIsRecording] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -42,6 +43,22 @@ export function useAudioRecorder() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       chunksRef.current = [];
+
+      // Unlock browser audio so TTS can autoplay after the async round-trip
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new AudioContext();
+      }
+      const unlock = audioCtxRef.current;
+      if (unlock.state === "suspended") {
+        await unlock.resume();
+      }
+      const oscillator = unlock.createOscillator();
+      const gain = unlock.createGain();
+      gain.gain.value = 0;
+      oscillator.connect(gain);
+      gain.connect(unlock.destination);
+      oscillator.start();
+      oscillator.stop(unlock.currentTime + 0.01);
 
       const mimeType = pickMimeType();
       const recorder = mimeType
